@@ -55,8 +55,6 @@ airfare_report_dataframe = pd.read_csv("airfare_report.csv", sep=",")
 # print("\n\nSliced to just the cities\n\n")
 # print(airfare_report_dataframe[['city1', 'city2']])
 
-#TODO: Figure out the other columns like fare_lg, lf_ms, etc. Trim these columns out if necessary.
-
 airfare_report_dataframe = airfare_report_dataframe.reindex(np.random.permutation(airfare_report_dataframe.index))
 print(airfare_report_dataframe.describe())
 
@@ -102,3 +100,5 @@ root_mean_squared_error = math.sqrt(mean_squared_error)
 print("Mean Squared Error (on training data): %0.3f" % mean_squared_error)
 print("Root Mean Squared Error (on training data): %0.3f" % root_mean_squared_error)
 
+#TODO: finish implementing a linear regressor, configure one-hot encoding for locations or something similar to a lat lon implementation
+#TODO: split up data into training, test, verification, data.
