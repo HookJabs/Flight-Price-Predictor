@@ -100,5 +100,5 @@ root_mean_squared_error = math.sqrt(mean_squared_error)
 print("Mean Squared Error (on training data): %0.3f" % mean_squared_error)
 print("Root Mean Squared Error (on training data): %0.3f" % root_mean_squared_error)
 
-#TODO: finish implementing a linear regressor, configure one-hot encoding for locations or something similar to a lat lon implementation
+#TODO: configure one-hot encoding for locations or something similar to a lat lon implementation
 #TODO: split up data into training, test, verification, data.
