@@ -1,3 +1,5 @@
 
 .vscode/settings.json
 .vscode/launch.json
+__pycache__/FlightPricePredictor.cpython-37.pyc
+__pycache__/trainModel.cpython-37.pyc
