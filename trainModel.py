@@ -53,16 +53,6 @@ def train_model(learning_rate, steps, batch_size, input_feature="nsmiles"):
       optimizer=my_optimizer
   )
 
-  # Set up to plot the state of our model's line each period.
-  plt.figure(figsize=(15, 6))
-  plt.subplot(1, 2, 1)
-  plt.title("Learned Line by Period")
-  plt.ylabel(my_label)
-  plt.xlabel(my_feature)
-  sample = airfare_report_dataframe.sample(n=300)
-  plt.scatter(sample[my_feature], sample[my_label])
-  colors = [cm.coolwarm(x) for x in np.linspace(-1, 1, periods)]
-
   # Train the model, but do so inside a loop so that we can periodically assess
   # loss metrics.
   print("Training model...")
@@ -85,19 +75,7 @@ def train_model(learning_rate, steps, batch_size, input_feature="nsmiles"):
     print("  period %02d : %0.2f" % (period, root_mean_squared_error))
     # Add the loss metrics from this period to our list.
     root_mean_squared_errors.append(root_mean_squared_error)
-    # Finally, track the weights and biases over time.
-    # Apply some math to ensure that the data and line are plotted neatly.
-    y_extents = np.array([0, sample[my_label].max()])
     
-    weight = linear_regressor.get_variable_value('linear/linear_model/%s/weights' % input_feature)[0]
-    bias = linear_regressor.get_variable_value('linear/linear_model/bias_weights')
-
-    x_extents = (y_extents - bias) / weight
-    x_extents = np.maximum(np.minimum(x_extents,
-                                      sample[my_feature].max()),
-                           sample[my_feature].min())
-    y_extents = weight * x_extents + bias
-    plt.plot(x_extents, y_extents, color=colors[period]) 
   print("Model training finished.")
 
   # Output a graph of loss metrics over periods.
