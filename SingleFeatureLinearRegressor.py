@@ -4,7 +4,7 @@
 from __future__ import print_function
 import math
 
-from FlightPricePredictor import my_input_fn
+from InputFunctions import single_feature_input_fn
 from IPython import display
 from matplotlib import cm
 from matplotlib import gridspec
@@ -12,13 +12,16 @@ from matplotlib import pyplot as plt
 import numpy as np
 import pandas as pd
 from sklearn import metrics
+import os
 import tensorflow as tf
+#ingores all warnings and things to clean up the output
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
 from tensorflow.python.data import Dataset
 pd.__version__
 
 airfare_report_dataframe = pd.read_csv("airfare_report.csv", sep=",")
 
-def train_model(learning_rate, steps, batch_size, input_feature="nsmiles"):
+def train_single_feature_linear_regressor(learning_rate, steps, batch_size, input_feature="nsmiles"):
   """Trains a linear regression model of one feature.
   
   Args:
@@ -30,6 +33,8 @@ def train_model(learning_rate, steps, batch_size, input_feature="nsmiles"):
       to use as input feature.
   """
   
+  print("TRAINING SINGLE FEATURE LINEAR REGRESSOR")
+
   periods = 10
   steps_per_period = steps / periods
 
@@ -42,8 +47,8 @@ def train_model(learning_rate, steps, batch_size, input_feature="nsmiles"):
   feature_columns = [tf.feature_column.numeric_column(my_feature)]
   
   # Create input functions.
-  training_input_fn = lambda:my_input_fn(my_feature_data, targets, batch_size=batch_size)
-  prediction_input_fn = lambda: my_input_fn(my_feature_data, targets, num_epochs=1, shuffle=False)
+  training_input_fn = lambda: single_feature_input_fn(my_feature_data, targets, batch_size=batch_size)
+  prediction_input_fn = lambda: single_feature_input_fn(my_feature_data, targets, num_epochs=1, shuffle=False)
   
   # Create a linear regressor object.
   my_optimizer = tf.train.GradientDescentOptimizer(learning_rate=learning_rate)
@@ -52,6 +57,18 @@ def train_model(learning_rate, steps, batch_size, input_feature="nsmiles"):
       feature_columns=feature_columns,
       optimizer=my_optimizer
   )
+
+  # Set up to plot the state of our model's line each period.
+  plt.figure(figsize=(15, 6))
+  plt.subplot(1, 2, 1)
+  plt.title("Learned Line by Period")
+  plt.ylabel(my_label)
+  plt.xlabel(my_feature)
+  sample = airfare_report_dataframe.sample(n=300)
+  plt.scatter(sample[my_feature], sample[my_label])
+  colors = [cm.coolwarm(x) for x in np.linspace(-1, 1, periods)]
+
+  plt.show()
 
   # Train the model, but do so inside a loop so that we can periodically assess
   # loss metrics.
@@ -76,6 +93,10 @@ def train_model(learning_rate, steps, batch_size, input_feature="nsmiles"):
     # Add the loss metrics from this period to our list.
     root_mean_squared_errors.append(root_mean_squared_error)
     
+        # Finally, track the weights and biases over time.
+    # Apply some math to ensure that the data and line are plotted neatly.
+    y_extents = np.array([0, sample[my_label].max()])
+
   print("Model training finished.")
 
   # Output a graph of loss metrics over periods.
@@ -86,10 +107,8 @@ def train_model(learning_rate, steps, batch_size, input_feature="nsmiles"):
   plt.tight_layout()
   plt.plot(root_mean_squared_errors)
 
-  # Output a table with calibration data.
-  calibration_data = pd.DataFrame()
-  calibration_data["predictions"] = pd.Series(predictions)
-  calibration_data["targets"] = pd.Series(targets)
-  display.display(calibration_data.describe())
+  plt.show()
+
+  #I left out the calibration data graph
 
   print("Final RMSE (on training data): %0.2f" % root_mean_squared_error)

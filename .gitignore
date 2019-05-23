@@ -4,3 +4,6 @@
 __pycache__/FlightPricePredictor.cpython-37.pyc
 __pycache__/trainModel.cpython-37.pyc
 __pycache__/PreprocessFeatures.cpython-37.pyc
+__pycache__/InputFunctions.cpython-37.pyc
+__pycache__/MultiFeatureLinearRegressor.cpython-37.pyc
+__pycache__/SingleFeatureLinearRegressor.cpython-37.pyc

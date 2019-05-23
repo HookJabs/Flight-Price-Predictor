@@ -4,7 +4,6 @@
 from __future__ import print_function
 import math
 
-from FlightPricePredictor import my_input_fn
 from IPython import display
 from matplotlib import cm
 from matplotlib import gridspec
@@ -45,16 +44,16 @@ def preprocess_features(airfare_report_dataframe):
   """
 
   selected_features = airfare_report_dataframe[
-    ["year",
+    ["Year",
      "quarter",
      "citymarketid_1",
      "citymarketid_2",
      "nsmiles",
      "passengers",
      #the values below may be good or bad for my results.
-     "carrier_lg",
+     #"carrier_lg",
      "large_ms",
-     "carrier_low",
+     #"carrier_low",
      "lf_ms"]]
   processed_features = selected_features.copy()
   # Create a synthetic feature to add to the existing features
