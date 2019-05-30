@@ -44,7 +44,9 @@ def train_multi_feature_linear_regressor(
     A `LinearRegressor` object trained on the training data.
   """
 
-  periods = 10
+#TODO: Hey, I set this as 1 because I don't want to wait right now. Should be 10
+
+  periods = 1
   steps_per_period = steps / periods
   
   # Create a linear regressor object.
@@ -65,8 +67,8 @@ def train_multi_feature_linear_regressor(
       training_targets["fare"], 
       num_epochs=1, 
       shuffle=False)
-  predict_test_input_fn = lambda: multi_feature_input_fn(
-      test_examples, test_targets["fare"], 
+  predict_more_input_fn = lambda: multi_feature_input_fn(
+      training_examples, training_targets["fare"], 
       num_epochs=1, 
       shuffle=False)
   
@@ -85,8 +87,10 @@ def train_multi_feature_linear_regressor(
     #compute predictions.
     training_predictions = linear_regressor.predict(input_fn=predict_training_input_fn)
     training_predictions = np.array([item['predictions'][0] for item in training_predictions])
+
+    print(training_predictions)
     
-    test_predictions = linear_regressor.predict(input_fn=predict_test_input_fn)
+    test_predictions = linear_regressor.predict(input_fn=predict_more_input_fn)
     test_predictions = np.array([item['predictions'][0] for item in test_predictions])
     
     # Compute training and test loss.
@@ -110,7 +114,13 @@ def train_multi_feature_linear_regressor(
   plt.plot(test_rmse, label="test")
   plt.legend()
 
-  plt.show()
+
+  #plt.show()
+
+  more_predictions = linear_regressor.predict(input_fn=predict_more_input_fn)
+  more_predictions = np.array([item['predictions'][0] for item in test_predictions])
+
+  print(more_predictions)
 
   return linear_regressor
 
