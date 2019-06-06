@@ -107,8 +107,8 @@ def startPrompts():
 
         print("Input about how many miles from origin to destination:")
         print("EX: \"1000\"")
-        print()
         userInput = input("")
+        print()
         try:
             userInput = int(userInput)
         except ValueError:
@@ -121,8 +121,8 @@ def startPrompts():
 
         print("Input the year you plan on traveling:")
         print("EX: \"2019\"")
-        print()
         userInput = input("")
+        print()
         try:
             userInput = int(userInput)
         except ValueError:
@@ -135,8 +135,8 @@ def startPrompts():
 
         print("Input the quarter (season) you plan on traveling:")
         print("EX: \"1\"")
-        print()
         userInput = input("")
+        print()
         try:
             userInput = int(userInput)
         except ValueError:
