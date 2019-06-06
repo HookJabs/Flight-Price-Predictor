@@ -51,7 +51,28 @@ linear_regressor = train_multi_feature_linear_regressor(
     test_examples=test_examples,
     test_targets=test_targets)
 
+def makeNewPrediction():
+        
+    single_example = preprocess_features(airfare_report_dataframe.head(10))
+    single_target  = preprocess_targets(airfare_report_dataframe.head(10))
+    # training_targets = preprocess_targets(airfare_report_dataframe.iloc[0]))
 
+    predict_more_input_fn = lambda: multi_feature_input_fn(
+        single_example, single_target["fare"], 
+        num_epochs=1, 
+        shuffle=False)
+
+
+    prediction = linear_regressor.predict(input_fn=predict_more_input_fn)
+    predictions = np.array([item['predictions'][0] for item in prediction])
+    for p in predictions:
+        print(p)
+    print("this is it:")
+    print(predictions)
+
+
+
+makeNewPrediction()
 
 # predictionSet = preprocess_features(airfare_report_dataframe.head(math.floor(dfSize * 0.7)))
 # anotherSet = preprocess_features(airfare_report_dataframe.head(math.floor(dfSize * 0.7)))

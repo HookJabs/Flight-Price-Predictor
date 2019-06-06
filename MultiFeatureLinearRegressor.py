@@ -67,10 +67,20 @@ def train_multi_feature_linear_regressor(
       training_targets["fare"], 
       num_epochs=1, 
       shuffle=False)
-  predict_more_input_fn = lambda: multi_feature_input_fn(
-      training_examples, training_targets["fare"], 
-      num_epochs=1, 
-      shuffle=False)
+
+  predict_training_input_fn = lambda: multi_feature_input_fn(
+    training_examples, 
+    training_targets["fare"], 
+    num_epochs=1, 
+    shuffle=False)
+  predict_test_input_fn = lambda: multi_feature_input_fn(
+    test_examples, test_targets["fare"], 
+    num_epochs=1, 
+    shuffle=False)
+  # predict_more_input_fn = lambda: multi_feature_input_fn(
+  #     training_examples, training_targets["fare"], 
+  #     num_epochs=1, 
+  #     shuffle=False)
   
   # Train the model, but do so inside a loop so that we can periodically assess
   # loss metrics.
@@ -88,9 +98,9 @@ def train_multi_feature_linear_regressor(
     training_predictions = linear_regressor.predict(input_fn=predict_training_input_fn)
     training_predictions = np.array([item['predictions'][0] for item in training_predictions])
 
-    print(training_predictions)
+    # print(training_predictions)
     
-    test_predictions = linear_regressor.predict(input_fn=predict_more_input_fn)
+    test_predictions = linear_regressor.predict(input_fn=predict_test_input_fn)
     test_predictions = np.array([item['predictions'][0] for item in test_predictions])
     
     # Compute training and test loss.
@@ -117,10 +127,10 @@ def train_multi_feature_linear_regressor(
 
   #plt.show()
 
-  more_predictions = linear_regressor.predict(input_fn=predict_more_input_fn)
-  more_predictions = np.array([item['predictions'][0] for item in test_predictions])
+  # more_predictions = linear_regressor.predict(input_fn=predict_more_input_fn)
+  # more_predictions = np.array([item['predictions'][0] for item in test_predictions])
 
-  print(more_predictions)
+  # print(more_predictions)
 
   return linear_regressor
 
