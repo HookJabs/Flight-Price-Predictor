@@ -44,9 +44,7 @@ def train_multi_feature_linear_regressor(
     A `LinearRegressor` object trained on the training data.
   """
 
-#TODO: Hey, I set this as 1 because I don't want to wait right now. Should be 10
-
-  periods = 1
+  periods = 10
   steps_per_period = steps / periods
   
   # Create a linear regressor object.
@@ -145,8 +143,3 @@ def construct_feature_columns(input_features):
     """ 
     return set([tf.feature_column.numeric_column(my_feature)
                 for my_feature in input_features])
-
-# Because we're now working with multiple input features, let's 
-# modularize our code for configuring feature columns into a separate function. 
-# (For now, this code is fairly simple, as all our features are numeric, 
-# but we'll build on this code as we use other types of features in future exercises.)

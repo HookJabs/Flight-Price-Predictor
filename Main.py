@@ -62,12 +62,14 @@ def startPrompts():
         try:
             id_1Input = found.iloc[[0],[2]].iat[0,0]
             print(id_1Input)
+            print()
         except IndexError:
             #try to get the id value searching destinations
             found = airfare_report_dataframe[airfare_report_dataframe['city2'].str.contains(id_1Input)]
             try:
                 id_1Input = found.iloc[[0],[3]].iat[0,0]
                 print(id_1Input)
+                print()
             except IndexError:
                 print("location not found.")
                 print()
@@ -87,12 +89,14 @@ def startPrompts():
         try:
             id_2Input = found.iloc[[0],[2]].iat[0,0]
             print(id_2Input)
+            print()
         except IndexError:
             #try to get the id value searching destinations
             found = airfare_report_dataframe[airfare_report_dataframe['city2'].str.contains(id_2Input)]
             try:
                 id_2Input = found.iloc[[0],[3]].iat[0,0]
                 print(id_2Input)
+                print()
             except IndexError:
                 print("location not found.")
                 print()
@@ -172,9 +176,5 @@ def startPrompts():
             print()
             startPrompts()
         print()
-        #make the defualt passenger number the avg of the whole dataset.
-        #same for:
-        # "large_ms",
-        # "lf_ms",
 
 startPrompts()
