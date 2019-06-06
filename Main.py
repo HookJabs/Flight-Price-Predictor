@@ -30,16 +30,6 @@ training_targets = preprocess_targets(airfare_report_dataframe.head(math.floor(d
 test_examples = preprocess_features(airfare_report_dataframe.tail(math.floor(dfSize * 0.3)))
 test_targets = preprocess_targets(airfare_report_dataframe.tail(math.floor(dfSize * 0.3)))
 
-#print(preprocess_features(airfare_report_dataframe.iloc[0]))
-
-
-# train_single_feature_linear_regressor(
-#     learning_rate=0.00002,
-#     steps=500,
-#     batch_size=4
-# )
-
-
 linear_regressor = train_multi_feature_linear_regressor(
     #best: 0.00015, 500, 4, Score: 45.14
     learning_rate=0.00015,
@@ -51,73 +41,140 @@ linear_regressor = train_multi_feature_linear_regressor(
     test_examples=test_examples,
     test_targets=test_targets)
 
-def makeNewPrediction():
+avgLargeMS = airfare_report_dataframe.loc[:,"large_ms"].mean()
+avgSmallMS = airfare_report_dataframe.loc[:,"lf_ms"].mean()
+avgPassengers = airfare_report_dataframe.loc[:,"passengers"].mean()
+avgFare = airfare_report_dataframe.loc[:,"fare"].mean()
+
+
+userInput = ""
+
+def startPrompts():
+    while(True):
+        print()
+        print("Input an origin location:")
+        print("EX: \"Bellingham, WA\"")
+        userInput = input("")
+        print()
+        id_1Input = userInput
+        #try to get the id value searching origins
+        found = airfare_report_dataframe[airfare_report_dataframe['city1'].str.contains(id_1Input)]
+        try:
+            id_1Input = found.iloc[[0],[2]].iat[0,0]
+            print(id_1Input)
+        except IndexError:
+            #try to get the id value searching destinations
+            found = airfare_report_dataframe[airfare_report_dataframe['city2'].str.contains(id_1Input)]
+            try:
+                id_1Input = found.iloc[[0],[3]].iat[0,0]
+                print(id_1Input)
+            except IndexError:
+                print("location not found.")
+                print()
+                print("Error, something went wrong, restarting")
+                print()
+                startPrompts()
+
+        #if I can find that row and column, just look at the value 2 over on left, that's my id num
+
+        print("Input a destination:")
+        print("EX: \"Las Vegas, NV\"")
+        userInput = input("")
+        print()
+        id_2Input = userInput
+        #try to get the id value searching origins
+        found = airfare_report_dataframe[airfare_report_dataframe['city1'].str.contains(id_2Input)]
+        try:
+            id_2Input = found.iloc[[0],[2]].iat[0,0]
+            print(id_2Input)
+        except IndexError:
+            #try to get the id value searching destinations
+            found = airfare_report_dataframe[airfare_report_dataframe['city2'].str.contains(id_2Input)]
+            try:
+                id_2Input = found.iloc[[0],[3]].iat[0,0]
+                print(id_2Input)
+            except IndexError:
+                print("location not found.")
+                print()
+                print("Error, something went wrong, restarting")
+                print()
+                startPrompts()
         
-    single_example = preprocess_features(airfare_report_dataframe.head(10))
-    single_target  = preprocess_targets(airfare_report_dataframe.head(10))
-    # training_targets = preprocess_targets(airfare_report_dataframe.iloc[0]))
 
-    predict_more_input_fn = lambda: multi_feature_input_fn(
-        single_example, single_target["fare"], 
-        num_epochs=1, 
-        shuffle=False)
+        print("Input about how many miles from origin to destination:")
+        print("EX: \"1000\"")
+        print()
+        userInput = input("")
+        try:
+            userInput = int(userInput)
+        except ValueError:
+            print("invalid number")
+            print()
+            print("Error, something went wrong, restarting")
+            print()
+            startPrompts()
+        milesInput = userInput
+
+        print("Input the year you plan on traveling:")
+        print("EX: \"2019\"")
+        print()
+        userInput = input("")
+        try:
+            userInput = int(userInput)
+        except ValueError:
+            print("invalid number")
+            print()
+            print("Error, something went wrong, restarting")
+            print()
+            startPrompts()
+        yearInput = userInput
+
+        print("Input the quarter (season) you plan on traveling:")
+        print("EX: \"1\"")
+        print()
+        userInput = input("")
+        try:
+            userInput = int(userInput)
+        except ValueError:
+            print("invalid number")
+            print()
+            print("Error, something went wrong, restarting")
+            print()
+            startPrompts()
+        quarterInput = userInput
+
+        #a temporary dictionary to be made into a small dataset to use for a new prediction
+        tempDict = {'Year' : [yearInput], 'quarter' : [quarterInput], 'citymarketid_1' : [id_1Input],
+        'citymarketid_2' : [id_2Input], 'nsmiles' : [milesInput], 'passengers' : [avgPassengers],
+        'fare' : [avgFare], 'large_ms' : [avgLargeMS], 'lf_ms' : [avgSmallMS]}
+
+        single_df = pd.DataFrame(data=tempDict)
+
+        new_example = preprocess_features(single_df)
+        new_target = preprocess_targets(single_df)
+
+        predict_new_input_fn = lambda: multi_feature_input_fn(
+            new_example, new_target["fare"], 
+            num_epochs=1, 
+            shuffle=False)
 
 
-    prediction = linear_regressor.predict(input_fn=predict_more_input_fn)
-    predictions = np.array([item['predictions'][0] for item in prediction])
-    for p in predictions:
-        print(p)
-    print("this is it:")
-    print(predictions)
+        prediction = linear_regressor.predict(input_fn=predict_new_input_fn)
+        predictions = np.array([item['predictions'][0] for item in prediction])
+        print()
+        try:
+            print("Your price is: ")
+            print(predictions)
+            print("+/- about $45")
+        except:
+            print()
+            print("Error, something went wrong, restarting")
+            print()
+            startPrompts()
+        print()
+        #make the defualt passenger number the avg of the whole dataset.
+        #same for:
+        # "large_ms",
+        # "lf_ms",
 
-
-
-makeNewPrediction()
-
-# predictionSet = preprocess_features(airfare_report_dataframe.head(math.floor(dfSize * 0.7)))
-# anotherSet = preprocess_features(airfare_report_dataframe.head(math.floor(dfSize * 0.7)))
-
-
-
-# single_prediction_input_fn = lambda: single_input_fn(
-#     predictionSet, 
-#     anotherSet["fare"],
-#     batch_size=1)
-# print("1")
-# #compute new predictions.
-# single_prediction = linear_regressor.predict(input_fn=single_prediction_input_fn)
-# print("1.5")
-# single_prediction = np.array([item['predictions'][0] for item in single_prediction])
-# print("2")
-# print(single_prediction)
-
-# predict_single_input_fn = lambda: multi_feature_input_fn(
-#       test_examples, test_targets["fare"], 
-#       num_epochs=1, 
-#       shuffle=False)
-
-# single_example = preprocess_features(airfare_report_dataframe.head
-# input_fn = tf.estimator.inputs.numpy_input_fn(preprocess_features(airfare_report_dataframe.iloc[0])))
-# single_feature = preprocess_features(airfare_report_dataframe.iloc[0])
-# single_input_fn = lambda: multi_feature_input_fn(single_feature, single_feature["fare"], batch_size=1)
-
-# single_predictions = linear_regressor.predict(input_fn=single_input_fn)
-
-# print(single_predictions)
-# for prediction in single_predictions:
-#     print(prediction)
-# for single_prediction in SN_classifier.predict(input_fn):
-#     predicted_class = single_prediction['class']
-#     probability = single_prediction['probability']
-#     print(predicted_class + " " + probability)
-# predictions = list(linear_regressor.predict(preprocess_features(airfare_report_dataframe.iloc[0])))
-# predicted_classes = [p["classes"] for p in predictions]
-
-# print(
-#     "New Samples, Class Predictions:    {}\n"
-#     .format(predicted_classes))
-#print(linear_regressor.predict(preprocess_features(airfare_report_dataframe.iloc[0])))
-#TODO: Focus on polish. Presentation is coming up. Use it to make predictions.
-#TODO: Encode the carrier data from strings to numeric values
-#TODO: Consider using a small neural network
-#TODO: Consider regularization
+startPrompts()

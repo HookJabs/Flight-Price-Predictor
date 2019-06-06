@@ -55,10 +55,10 @@ def preprocess_features(airfare_report_dataframe):
      "passengers",
      #"carrier_lg",
      "large_ms",
-     "fare_lg",
+     #"fare_lg",
      #"carrier_low",
      "lf_ms",
-     "fare_low"
+     #"fare_low"
      ]]
   processed_features = selected_features.copy()
   # Create a synthetic feature to add to the existing features
