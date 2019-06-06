@@ -44,17 +44,22 @@ def preprocess_features(airfare_report_dataframe):
   """
 
   selected_features = airfare_report_dataframe[
-    ["Year",
+    #removing lf_ms and large_ms negatively impacted results
+    #adding the large and small fares has boosted performance, but I am unsure if I can reproduce that for future predictions.
+    [
+      "Year",
      "quarter",
      "citymarketid_1",
      "citymarketid_2",
      "nsmiles",
      "passengers",
-     #the values below may be good or bad for my results.
      #"carrier_lg",
      "large_ms",
+     "fare_lg",
      #"carrier_low",
-     "lf_ms"]]
+     "lf_ms",
+     "fare_low"
+     ]]
   processed_features = selected_features.copy()
   # Create a synthetic feature to add to the existing features
   processed_features["cost_per_mile"] = (
